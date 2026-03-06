@@ -21,10 +21,13 @@ export default function StudentDashboard() {
   // 🟢 Obtenemos los datos que nos pasó el Layout padre
   const { dataStudent, dataClassroomId } = useOutletContext<any>();
 
-  const currentAulaName =
-    dataStudent?.classrooms_students.find(
-      (c: any) => String(c.id) === dataClassroomId,
-    )?.classroom.name || "Sin Aula";
+  const classroom = dataStudent?.classrooms_students.find(
+    (c: any) => String(c.id) === dataClassroomId,
+  );
+
+  const currentAulaName = classroom
+    ? `${classroom.classroom.name} - ${classroom.classroom.year}`
+    : "Sin Aula";
 
   // Botones principales del Bento Grid (Mismos iconos y colores que pusiste)
   const dashboardItems = [

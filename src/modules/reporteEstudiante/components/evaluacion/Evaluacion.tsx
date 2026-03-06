@@ -26,8 +26,6 @@ const Evaluacion = () => {
     null,
   );
 
-  console.log(resultadoEvaluacion);
-
   useEffect(() => {
     if (!id) return;
 

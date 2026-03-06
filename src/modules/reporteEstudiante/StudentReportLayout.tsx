@@ -168,10 +168,13 @@ const StudentReportLayout = () => {
     },
   ];
 
-  const currentAulaName =
-    dataStudent?.classrooms_students.find(
-      (c) => String(c.id) === dataClassroomId,
-    )?.classroom.name || "Sin Aula";
+  const classroom = dataStudent?.classrooms_students.find(
+    (c: any) => String(c.id) === dataClassroomId,
+  );
+
+  const currentAulaName = classroom
+    ? `${classroom.classroom.name} - ${classroom.classroom.year}`
+    : "Sin Aula";
 
   return (
     <div className="h-screen bg-slate-50 flex overflow-hidden font-sans text-slate-900">
