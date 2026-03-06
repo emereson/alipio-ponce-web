@@ -42,7 +42,7 @@ interface Week {
 }
 
 const ExamsList = () => {
-  const { dataClassroomId } = useOutletContext<{ dataClassroomId: string }>();
+  const { classroomId } = useOutletContext<{ classroomId: string }>();
   const navigate = useNavigate();
 
   const [semanas, setSemanas] = useState<Week[]>([]);
@@ -50,15 +50,15 @@ const ExamsList = () => {
 
   // Carga de datos al montar el componente
   useEffect(() => {
-    if (!dataClassroomId) return;
+    if (!classroomId) return;
     setLoading(true);
 
     axios
-      .get(`${API}/resultado-evaluacion/${dataClassroomId}`, config)
+      .get(`${API}/resultado-evaluacion/${classroomId}`, config)
       .then((res) => setSemanas(res.data.semanas))
       .catch((err) => handleAxiosError(err))
       .finally(() => setLoading(false));
-  }, [dataClassroomId]);
+  }, [classroomId]);
 
   // 2. Función para renderizar la acción según el estado
   const renderAccionEvaluacion = (examen: Exam) => {
