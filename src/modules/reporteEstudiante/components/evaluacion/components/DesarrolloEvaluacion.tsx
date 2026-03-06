@@ -12,7 +12,7 @@ import {
 } from "@heroui/react";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "sonner";
-import { SERVERIMG } from "../../../../../../utils/api";
+import { SERVERIMG } from "../../../../../utils/api";
 
 // ================= 1. COMPONENTE CRONÓMETRO AISLADO =================
 // Al estar aislado, sus actualizaciones por segundo no afectan al resto del formulario

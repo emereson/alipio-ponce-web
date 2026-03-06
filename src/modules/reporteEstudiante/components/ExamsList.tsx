@@ -12,9 +12,9 @@ import {
 import { Button, Card, CardBody, Chip, Divider, Spinner } from "@heroui/react";
 
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { API } from "../../../../utils/api";
-import config from "../../../../auth/auth.config";
-import { handleAxiosError } from "../../../../utils/errorHandler";
+import { API } from "../../../utils/api";
+import config from "../../../auth/auth.config";
+import { handleAxiosError } from "../../../utils/errorHandler";
 
 // 1. Interfaces para tipar correctamente los datos
 interface ResultadoEvaluacion {

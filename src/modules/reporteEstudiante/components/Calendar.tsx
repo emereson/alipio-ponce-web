@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { ChevronLeft, Calendar as CalendarIcon, Download } from "lucide-react";
 import { toast } from "sonner";
-import { API } from "../../../../utils/api";
-import config from "../../../../auth/auth.config";
+import { API } from "../../../utils/api";
+import config from "../../../auth/auth.config";
 import { useNavigate } from "react-router-dom";
 
 // Interfaces para el tipado de TypeScript

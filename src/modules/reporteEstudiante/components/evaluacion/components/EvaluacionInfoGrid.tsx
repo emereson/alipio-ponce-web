@@ -1,6 +1,6 @@
 import { Clock, HelpCircle, Award, CalendarDays } from "lucide-react";
 import { Card, CardBody } from "@heroui/react";
-import { formatDate } from "../../../../../../utils/formatDate";
+import { formatDate } from "../../../../../utils/formatDate";
 
 interface Props {
   evaluacion: any;

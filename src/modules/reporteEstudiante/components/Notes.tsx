@@ -15,9 +15,9 @@ import {
 } from "@heroui/react";
 import { ChevronLeft, BarChart3, BookOpen, X, Award } from "lucide-react";
 import { toast } from "sonner";
-import { API } from "../../../../utils/api";
-import config from "../../../../auth/auth.config";
-import Loading from "../../../../components/Loading";
+import { API } from "../../../utils/api";
+import config from "../../../auth/auth.config";
+import Loading from "../../../components/Loading";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
 // Interfaces para tipado robusto

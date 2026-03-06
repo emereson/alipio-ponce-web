@@ -17,8 +17,8 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import ModalAddFile from "./components/ModalAddFile";
-import { API, SERVERIMG } from "../../../../../utils/api";
-import config from "../../../../../auth/auth.config";
+import { API, SERVERIMG } from "../../../../utils/api";
+import config from "../../../../auth/auth.config";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
 // Interfaces para TypeScript

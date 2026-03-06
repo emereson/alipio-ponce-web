@@ -8,8 +8,8 @@ import {
   FileText,
 } from "lucide-react";
 import { toast } from "sonner";
-import { API, SERVERIMG } from "../../../../utils/api";
-import config from "../../../../auth/auth.config";
+import { API, SERVERIMG } from "../../../utils/api";
+import config from "../../../auth/auth.config";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
 // Interfaces para TypeScript

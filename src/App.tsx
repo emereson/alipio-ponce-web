@@ -9,19 +9,19 @@ import Home from "./pages/Home";
 import Footer from "./components/Footer";
 import Niveles from "./pages/Niveles";
 import GalleriaFotos from "./pages/GaleriaFotos";
-import Attendance from "./modules/ventas/reporteEstudiante/components/Attendance";
-import StudentReportLayout from "./modules/ventas/reporteEstudiante/StudentReportLayout";
-import StudentDashboard from "./modules/ventas/reporteEstudiante/StudentDashboard";
-import Notes from "./modules/ventas/reporteEstudiante/components/Notes";
-import ExamsList from "./modules/ventas/reporteEstudiante/components/ExamsList";
-import Pays from "./modules/ventas/reporteEstudiante/components/Pays";
-import Debts from "./modules/ventas/reporteEstudiante/components/Debts";
-import Calendar from "./modules/ventas/reporteEstudiante/components/Calendar";
-import Observation from "./modules/ventas/reporteEstudiante/components/Observation";
-import Files from "./modules/ventas/reporteEstudiante/components/Files";
-import MyFiles from "./modules/ventas/reporteEstudiante/components/MyFiles/MyFiles";
-import Evaluacion from "./modules/ventas/reporteEstudiante/components/evaluacion/Evaluacion";
-import RevisionEvaluacion from "./modules/ventas/reporteEstudiante/components/RevisionEvaluacion";
+import Attendance from "./modules/reporteEstudiante/components/Attendance";
+import StudentReportLayout from "./modules/reporteEstudiante/StudentReportLayout";
+import StudentDashboard from "./modules/reporteEstudiante/StudentDashboard";
+import Notes from "./modules/reporteEstudiante/components/Notes";
+import ExamsList from "./modules/reporteEstudiante/components/ExamsList";
+import Pays from "./modules/reporteEstudiante/components/Pays";
+import Debts from "./modules/reporteEstudiante/components/Debts";
+import Calendar from "./modules/reporteEstudiante/components/Calendar";
+import Observation from "./modules/reporteEstudiante/components/Observation";
+import Files from "./modules/reporteEstudiante/components/Files";
+import MyFiles from "./modules/reporteEstudiante/components/MyFiles/MyFiles";
+import Evaluacion from "./modules/reporteEstudiante/components/evaluacion/Evaluacion";
+import RevisionEvaluacion from "./modules/reporteEstudiante/components/RevisionEvaluacion";
 
 // 1. Creamos un componente Layout para las rutas públicas
 const PublicLayout = () => {

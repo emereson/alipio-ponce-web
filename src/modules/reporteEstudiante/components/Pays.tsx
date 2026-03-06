@@ -8,9 +8,9 @@ import {
   Receipt,
 } from "lucide-react";
 import { toast } from "sonner";
-import { formatDate } from "../../../../utils/formatDate";
-import { API } from "../../../../utils/api";
-import config from "../../../../auth/auth.config";
+import { formatDate } from "../../../utils/formatDate";
+import { API } from "../../../utils/api";
+import config from "../../../auth/auth.config";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
 // Interfaces para TypeScript

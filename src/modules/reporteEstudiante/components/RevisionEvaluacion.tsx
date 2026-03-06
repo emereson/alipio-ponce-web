@@ -10,9 +10,9 @@ import {
   AlertCircle,
   ArrowRightLeft,
 } from "lucide-react";
-import { API, SERVERIMG } from "../../../../utils/api";
-import config from "../../../../auth/auth.config";
-import { handleAxiosError } from "../../../../utils/errorHandler";
+import { API, SERVERIMG } from "../../../utils/api";
+import config from "../../../auth/auth.config";
+import { handleAxiosError } from "../../../utils/errorHandler";
 
 const RevisionEvaluacion = () => {
   const { id } = useParams<string>();

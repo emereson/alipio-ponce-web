@@ -4,8 +4,8 @@ import "react-calendar/dist/Calendar.css";
 import axios from "axios";
 import { ChevronLeft, Info } from "lucide-react";
 import { toast } from "sonner";
-import { API } from "../../../../utils/api";
-import config from "../../../../auth/auth.config";
+import { API } from "../../../utils/api";
+import config from "../../../auth/auth.config";
 import { useOutletContext, useNavigate } from "react-router-dom"; // 🟢 Importamos useNavigate
 
 // Interfaces para TypeScript

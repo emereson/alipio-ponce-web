@@ -13,7 +13,7 @@ import {
   Calendar as CalendarIcon,
   ClipboardList,
 } from "lucide-react";
-import { useAuthStore } from "../../../auth/auth.store";
+import { useAuthStore } from "../../auth/auth.store";
 
 export default function StudentDashboard() {
   const { perfil } = useAuthStore.getState();

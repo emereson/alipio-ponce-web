@@ -29,9 +29,9 @@ import {
 } from "@heroui/react";
 import { toast } from "sonner";
 
-import config from "../../../auth/auth.config";
-import { useAuthStore } from "../../../auth/auth.store";
-import { API } from "../../../utils/api";
+import config from "../../auth/auth.config";
+import { useAuthStore } from "../../auth/auth.store";
+import { API } from "../../utils/api";
 
 interface Classroom {
   id: number;

@@ -12,8 +12,8 @@ import {
 } from "@heroui/react";
 import { toast } from "sonner";
 import { Upload, FileType, CheckCircle2 } from "lucide-react";
-import { API } from "../../../../../../utils/api";
-import config from "../../../../../../auth/auth.config";
+import { API } from "../../../../../utils/api";
+import config from "../../../../../auth/auth.config";
 
 // Interfaces para TypeScript
 interface ModalAddFileProps {
