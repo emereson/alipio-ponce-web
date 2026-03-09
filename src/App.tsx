@@ -62,7 +62,7 @@ function App() {
             <Route path="pagos" element={<Pays />} />
             <Route path="deudas" element={<Debts />} />
             <Route path="calendario" element={<Calendar />} />
-            <Route path="observacion" element={<Observation />} />
+            <Route path="observaciones" element={<Observation />} />
             <Route path="archivos" element={<Files />} />
             <Route path="mis-archivos" element={<MyFiles />} />
             <Route path="evaluacion/:id" element={<Evaluacion />} />

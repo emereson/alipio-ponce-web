@@ -34,7 +34,7 @@ const Observation = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* LISTADO DE OBSERVACIONES */}
         <section className="space-y-4">
-          {dataStudent.observations && dataStudent.observations.length > 0 ? (
+          {dataStudent && dataStudent.observations.length > 0 ? (
             dataStudent?.observations.map((observation) => (
               <article
                 key={observation.id}
