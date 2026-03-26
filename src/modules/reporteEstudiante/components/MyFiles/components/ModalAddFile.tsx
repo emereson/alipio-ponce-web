@@ -104,14 +104,28 @@ const ModalAddFile = ({
     onOpenChange(false);
   };
 
+  // 🟢 MEJORA: Esta función intercepta el cierre del modal (ej. si el usuario da clic afuera o presiona ESC)
+  // para asegurarse de limpiar el formulario siempre.
+  const handleModalChange = (open: boolean) => {
+    if (!open) {
+      reset();
+      setFile(null);
+      setFileName("");
+    }
+    onOpenChange(open);
+  };
+
   return (
     <Modal
       isOpen={isOpen}
-      onOpenChange={onOpenChange}
+      onOpenChange={handleModalChange} // 🟢 Usamos la nueva función
       backdrop="blur"
       size="xl"
       placement="center"
       classNames={{
+        // 🟢 SOLUCIÓN: Forzamos a HeroUI a renderizar este modal por encima de tu 'z-60' de MyFiles
+        wrapper: "z-[999]",
+        backdrop: "z-[999]",
         base: "rounded-[2.5rem] p-4",
         header: "border-b border-slate-100 pb-4",
         body: "py-6",
