@@ -2,18 +2,44 @@ import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import axios from "axios";
-import { ChevronLeft, Info } from "lucide-react";
+import {
+  ChevronLeft,
+  Info,
+  Clock,
+  LogOut,
+  School,
+  AlertTriangle,
+} from "lucide-react";
 import { toast } from "sonner";
 import { API } from "../../../utils/api";
 import config from "../../../auth/auth.config";
-import { useOutletContext, useNavigate } from "react-router-dom"; // 🟢 Importamos useNavigate
+import { useOutletContext, useNavigate } from "react-router-dom";
+import { formatDate } from "../../../utils/formatDate";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+} from "@heroui/react";
 
 // Interfaces para TypeScript
 interface AttendanceItem {
   id: number;
   date: string;
   status: "Puntual" | "Tarde" | "Falta" | string;
+  hora_ingreso: string | null;
+  hora_salida: string | null;
 }
+
+// Extraemos los colores para reutilizarlos en el calendario y en el modal
+const statusColors: Record<string, string> = {
+  Puntual: "bg-green-500",
+  Tarde: "bg-yellow-500",
+  Falta: "bg-red-500",
+  Justificado: "bg-blue-400",
+};
 
 const Attendance = () => {
   const { dataClassroomId } = useOutletContext<{ dataClassroomId: string }>();
@@ -22,6 +48,11 @@ const Attendance = () => {
   const [attendance, setAttendance] = useState<AttendanceItem[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [loading, setLoading] = useState(false);
+
+  // Estados para el Modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAttendance, setSelectedAttendance] =
+    useState<AttendanceItem | null>(null);
 
   useEffect(() => {
     if (!dataClassroomId) return;
@@ -48,28 +79,63 @@ const Attendance = () => {
       .finally(() => setLoading(false));
   }, [dataClassroomId]);
 
-  const formatDate = (date: Date) => {
+  const formatDateCom = (date: Date) => {
     const offset = date.getTimezoneOffset();
     const adjustedDate = new Date(date.getTime() - offset * 60 * 1000);
     return adjustedDate.toISOString().split("T")[0];
   };
 
+  // Función que se ejecuta al hacer clic en un día del calendario
+  const handleDayClick = (value: Date) => {
+    setSelectedDate(value);
+    const formattedDate = formatDateCom(value);
+    const dayData = attendance.find((item) => item.date === formattedDate);
+
+    if (dayData) {
+      setSelectedAttendance(dayData);
+      setIsModalOpen(true);
+    }
+  };
+
+  // 🟢 FUNCIÓN ACTUALIZADA: Muestra íconos debajo de la fecha en el calendario
   const tileContent = ({ date, view }: { date: Date; view: string }) => {
     if (view === "month") {
-      const dayData = attendance.find((item) => item.date === formatDate(date));
+      const dayData = attendance.find(
+        (item) => item.date === formatDateCom(date),
+      );
 
       if (dayData) {
-        const statusColors: Record<string, string> = {
-          Puntual: "bg-green-500",
-          Tarde: "bg-yellow-500",
-          Falta: "bg-red-500",
-          Justificado: "bg-blue-400",
-        };
+        // 1. Lógica si NO hay hora de ingreso (Falta)
+        if (!dayData.hora_ingreso) {
+          return (
+            <div className="flex justify-center mt-1.5">
+              <AlertTriangle
+                size={14}
+                className="text-red-500"
+                strokeWidth={3}
+              />
+            </div>
+          );
+        }
 
+        // 2. Lógica si hay ingreso PERO NO hay salida (En la escuela)
+        if (dayData.hora_ingreso && !dayData.hora_salida) {
+          return (
+            <div className="flex justify-center mt-1.5">
+              <School
+                size={14}
+                className="text-emerald-500 animate-pulse"
+                strokeWidth={2.5}
+              />
+            </div>
+          );
+        }
+
+        // 3. Lógica si el día está completado (Tiene entrada y salida)
         return (
-          <div className="flex justify-center mt-1">
+          <div className="flex justify-center mt-1.5">
             <div
-              className={`h-1.5 w-1.5 rounded-full ${statusColors[dayData.status] || "bg-slate-300"} shadow-sm animate-pulse`}
+              className={`h-1.5 w-1.5 rounded-full ${statusColors[dayData.status] || "bg-slate-300"} shadow-sm`}
             ></div>
           </div>
         );
@@ -80,14 +146,16 @@ const Attendance = () => {
 
   const tileClassName = ({ date, view }: { date: Date; view: string }) => {
     if (view === "month") {
-      const dayData = attendance.find((item) => item.date === formatDate(date));
+      const dayData = attendance.find(
+        (item) => item.date === formatDateCom(date),
+      );
       if (dayData) return "has-attendance";
     }
     return "";
   };
 
   return (
-    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
       {/* CABECERA DE NAVEGACIÓN */}
       <div className="flex items-center justify-between mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
         <button
@@ -121,7 +189,7 @@ const Attendance = () => {
             tileContent={tileContent}
             tileClassName={tileClassName}
             value={selectedDate}
-            onChange={(val) => setSelectedDate(val as Date)}
+            onClickDay={handleDayClick}
           />
         </section>
 
@@ -196,6 +264,113 @@ const Attendance = () => {
         </section>
       </div>
 
+      {/* MODAL DE DETALLES DE ASISTENCIA */}
+      {selectedAttendance && (
+        <Modal
+          isOpen={isModalOpen}
+          onOpenChange={setIsModalOpen}
+          backdrop="blur"
+          placement="center"
+          size="sm"
+          classNames={{
+            base: "overflow-hidden rounded-2xl",
+            closeButton:
+              "text-white/70 hover:text-white hover:bg-black/20 z-50",
+          }}
+        >
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalHeader
+                  className={`flex flex-col gap-1 text-white p-6 ${statusColors[selectedAttendance.status] || "bg-slate-800"}`}
+                >
+                  <h3 className="text-2xl font-black uppercase tracking-widest drop-shadow-md">
+                    {selectedAttendance.status}
+                  </h3>
+                  <p className="text-sm font-medium opacity-90 l">
+                    Fecha: {formatDate(selectedAttendance.date)}
+                  </p>
+                </ModalHeader>
+
+                <ModalBody className="p-6 space-y-2">
+                  {/* LÓGICA DE INGRESO: Si no hay ingreso, mostramos alerta roja */}
+                  {!selectedAttendance.hora_ingreso ? (
+                    <div className="flex items-center gap-3 p-4 bg-red-50 rounded-2xl border border-red-100">
+                      <div className="bg-red-100 text-red-600 p-2 rounded-xl">
+                        <AlertTriangle size={20} />
+                      </div>
+                      <div>
+                        <span className="text-red-800 font-black block">
+                          FALTA REGISTRADA
+                        </span>
+                        <span className="text-red-500 font-medium text-xs">
+                          No se registró ingreso
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-blue-100 text-blue-600 p-2 rounded-xl">
+                          <Clock size={20} />
+                        </div>
+                        <span className="text-slate-500 font-bold uppercase text-xs tracking-wider">
+                          Hora Ingreso
+                        </span>
+                      </div>
+                      <span className="text-slate-900 font-black text-lg">
+                        {selectedAttendance.hora_ingreso}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* LÓGICA DE SALIDA: Si hay ingreso pero no salida, mostramos escuela */}
+                  {selectedAttendance.hora_ingreso &&
+                  !selectedAttendance.hora_salida ? (
+                    <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                      <div className="bg-emerald-100 text-emerald-600 p-2 rounded-xl animate-pulse">
+                        <School size={20} />
+                      </div>
+                      <div>
+                        <span className="text-emerald-800 font-black block">
+                          EN CLASES
+                        </span>
+                        <span className="text-emerald-600 font-medium text-xs">
+                          El alumno sigue en la institución
+                        </span>
+                      </div>
+                    </div>
+                  ) : selectedAttendance.hora_salida ? (
+                    <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-amber-100 text-amber-600 p-2 rounded-xl">
+                          <LogOut size={20} />
+                        </div>
+                        <span className="text-slate-500 font-bold uppercase text-xs tracking-wider">
+                          Hora Salida
+                        </span>
+                      </div>
+                      <span className="text-slate-900 font-black text-lg">
+                        {selectedAttendance.hora_salida}
+                      </span>
+                    </div>
+                  ) : null}
+                </ModalBody>
+
+                <ModalFooter className="p-6 pt-2">
+                  <Button
+                    className="w-full bg-slate-900 text-white font-bold py-6 rounded-xl"
+                    onPress={onClose}
+                  >
+                    Cerrar Detalles
+                  </Button>
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
+      )}
+
       <style>{`
         .custom-attendance-calendar { width: 100% !important; background: transparent; border: none !important; }
         .react-calendar__navigation button { color: #0f172a; font-weight: 900 !important; text-transform: uppercase; font-size: 0.75rem; }
@@ -211,7 +386,7 @@ const Attendance = () => {
         .react-calendar__tile--now { background: #fefce8 !important; color: #a16207 !important; }
         .react-calendar__tile--active { background: #0f172a !important; color: white !important; box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.3); }
         .react-calendar__tile:hover { background: #f8fafc !important; }
-        .has-attendance { font-weight: 900 !important; }
+        .has-attendance { font-weight: 900 !important; cursor: pointer; }
       `}</style>
     </div>
   );
