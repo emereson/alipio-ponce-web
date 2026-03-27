@@ -27,8 +27,7 @@ const Calendar = () => {
       .then((res) => {
         setCalendars(res.data.calendars);
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
         toast.error("No se pudo cargar el cronograma de actividades");
       })
       .finally(() => setLoading(false));

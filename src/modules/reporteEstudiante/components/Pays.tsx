@@ -39,8 +39,7 @@ const Pays = () => {
       .then((res) => {
         setPays(res.data.pays);
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
         toast.error("No se pudo obtener el historial de pagos");
       })
       .finally(() => setLoading(false));

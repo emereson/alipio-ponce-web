@@ -311,7 +311,6 @@ const ExcelComprobantesCotizacion = {
       XLSX.writeFile(workbook, fileName);
       return true;
     } catch (error) {
-      console.error("Error al exportar a Excel:", error);
       throw error;
     }
   },

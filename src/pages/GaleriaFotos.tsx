@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { API } from "../utils/api";
+import { API, SERVERIMG } from "../utils/api";
 
 // Interfaces para el tipado de la API
 interface GalleryImage {
@@ -21,12 +21,9 @@ const GalleriaFotos = () => {
 
   useEffect(() => {
     const url = `${API}/accessStudent/gallery`;
-    axios
-      .get(url)
-      .then((res) => {
-        setGallery(res.data?.galeryPhotos || []);
-      })
-      .catch((err) => console.error("Error cargando galería:", err));
+    axios.get(url).then((res) => {
+      setGallery(res.data?.galeryPhotos || []);
+    });
   }, []);
 
   const openModal = (album: GalleryAlbum, index: number) => {
@@ -88,7 +85,7 @@ const GalleriaFotos = () => {
                   }`}
                 >
                   <img
-                    src={img.galleryImgUrl}
+                    src={`${SERVERIMG}/${img.galleryImgUrl}`}
                     alt={album.name}
                     className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
                   />
@@ -123,7 +120,7 @@ const GalleriaFotos = () => {
             </button>
 
             <img
-              src={selectedAlbum.galeryPhotosImgs[currentIndex].galleryImgUrl}
+              src={`${SERVERIMG}/${selectedAlbum.galeryPhotosImgs[currentIndex].galleryImgUrl}`}
               alt="Preview"
               className="max-h-[80vh] w-auto rounded-lg shadow-2xl animate-fade-in"
               onClick={(e) => e.stopPropagation()}

@@ -14,7 +14,6 @@ const plantillaCotizacionPdf = (
 
   // Validación inicial
   if (!selectCotizacion || !selectCotizacion.cliente) {
-    console.error("No se proporcionaron datos válidos para la cotización.");
     return;
   }
 

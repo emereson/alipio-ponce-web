@@ -72,8 +72,7 @@ const Attendance = () => {
           );
         }
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
         toast.error("No se pudo cargar el registro de asistencia");
       })
       .finally(() => setLoading(false));

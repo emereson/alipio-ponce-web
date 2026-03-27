@@ -17,11 +17,12 @@ interface FileItem {
   id: number;
   name_archivo: string;
   archivo_url: string;
+  link_archivo: string;
 }
 
 const Files = () => {
   const { classroomId } = useOutletContext<{ classroomId: string }>();
-  const navigate = useNavigate(); // 🟢 Hook para navegar
+  const navigate = useNavigate();
 
   const [files, setFiles] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -37,14 +38,19 @@ const Files = () => {
       .then((res) => {
         setFiles(res.data.files);
       })
-      .catch((err) => {
-        console.error(err);
+      .catch(() => {
         toast.error("No se pudo cargar el material educativo");
       })
       .finally(() => {
         setLoading(false);
       });
   }, [classroomId]);
+
+  // 🟢 Función auxiliar para asegurar que el link sea absoluto
+  const formatExternalLink = (url: string) => {
+    if (!url) return "#";
+    return url.startsWith("http") ? url : `https://${url}`;
+  };
 
   return (
     <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -76,12 +82,10 @@ const Files = () => {
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
           {files && files.length > 0 ? (
             files.map((file) => (
-              <a
+              <div
                 key={file.id}
-                href={`${SERVERIMG}/${file.archivo_url}`}
-                target="_blank"
-                rel="noreferrer"
-                className="group relative bg-white p-6 rounded-2xl shadow-md border border-slate-100 flex flex-col items-center text-center transition-all hover:shadow-xl hover:-translate-y-1.25 hover:border-yellow-500/30"
+                // 🟢 Cambiamos de <a> a <div>
+                className="group relative bg-white p-6 pb-4 rounded-2xl shadow-md border border-slate-100 flex flex-col items-center text-center transition-all hover:shadow-xl hover:-translate-y-1.25 hover:border-yellow-500/30"
               >
                 {/* Icono de archivo decorativo */}
                 <div className="mb-4 relative">
@@ -92,10 +96,6 @@ const Files = () => {
                       className="text-slate-400 group-hover:text-yellow-600 transition-colors"
                     />
                   </div>
-                  {/* Badge de descarga */}
-                  <div className="absolute -bottom-1 -right-1 bg-red-600 text-white p-1.5 rounded-lg shadow-lg transform scale-0 group-hover:scale-100 transition-transform duration-300">
-                    <FileDown size={14} />
-                  </div>
                 </div>
 
                 {/* Nombre del Archivo */}
@@ -103,12 +103,35 @@ const Files = () => {
                   {file.name_archivo}
                 </p>
 
-                {/* Botón de acción visual */}
-                <div className="w-full pt-4 border-t border-slate-50 flex items-center justify-center gap-2 text-[10px] font-black text-slate-400 group-hover:text-red-600 uppercase tracking-tighter">
-                  <ExternalLink size={12} />
-                  Abrir Documento
+                {/* 🟢 NUEVA ZONA DE BOTONES */}
+                <div className="w-full pt-4 border-t border-slate-100 flex flex-col gap-2 mt-auto">
+                  {/* Botón original: Descargar Documento */}
+                  {file.archivo_url && (
+                    <a
+                      href={`${SERVERIMG}/${file.archivo_url}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full py-2.5 flex items-center justify-center gap-2 text-[10px] sm:text-xs font-black text-slate-500 bg-slate-50 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all uppercase tracking-tight"
+                    >
+                      <FileDown size={14} />
+                      Ver Documento
+                    </a>
+                  )}
+
+                  {/* Botón nuevo: Abrir Enlace */}
+                  {file.link_archivo && (
+                    <a
+                      href={formatExternalLink(file.link_archivo)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full py-2.5 flex items-center justify-center gap-2 text-[10px] sm:text-xs font-black text-slate-500 bg-slate-50 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all uppercase tracking-tight"
+                    >
+                      <ExternalLink size={14} />
+                      Abrir Enlace
+                    </a>
+                  )}
                 </div>
-              </a>
+              </div>
             ))
           ) : (
             <div className="col-span-full py-20 flex flex-col items-center justify-center bg-white rounded-[2.5rem] border-2 border-dashed border-slate-200">

@@ -47,9 +47,6 @@ const MyFiles = () => {
       .then((res) => {
         setFiles(res.data.files || []);
       })
-      .catch((err) => {
-        console.error("Error al obtener archivos:", err);
-      })
       .finally(() => {
         setLoading(false);
       });

@@ -15,7 +15,8 @@ import {
   ChevronDown,
   School,
   ClipboardCheck,
-  X,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import {
   Avatar,
@@ -26,12 +27,16 @@ import {
   DropdownMenu,
   DropdownItem,
   DropdownSection,
+  Modal, // 🟢 Importamos los componentes del Modal de HeroUI
+  ModalContent,
+  ModalHeader,
+  ModalBody,
 } from "@heroui/react";
 import { toast } from "sonner";
 
 import config from "../../auth/auth.config";
 import { useAuthStore } from "../../auth/auth.store";
-import { API } from "../../utils/api";
+import { API, SERVERIMG } from "../../utils/api";
 
 interface Classroom {
   id: number;
@@ -79,7 +84,12 @@ const StudentReportLayout = () => {
 
   // Estados para UI
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // 🟢 Iniciamos en 'false' para que no parpadee al cargar la página
   const [showNotifications, setShowNotifications] = useState(false);
+
+  // Estado para controlar el índice actual del slider
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   // Carga inicial
   useEffect(() => {
@@ -91,8 +101,15 @@ const StudentReportLayout = () => {
         ]);
 
         const student = studentRes.data.student;
+        const fetchedNotifications = notifyRes.data.notifications || [];
+
         setDataStudent(student);
-        setNotifications(notifyRes.data.notifications);
+        setNotifications(fetchedNotifications);
+
+        // 🟢 Abrimos el modal SOLO si llegaron notificaciones
+        if (fetchedNotifications.length > 0) {
+          setShowNotifications(true);
+        }
 
         const lastClassroom = student.classrooms_students.at(-1);
         if (lastClassroom) setDataClassroomId(String(lastClassroom.id));
@@ -115,6 +132,19 @@ const StudentReportLayout = () => {
   const handleLogout = () => {
     localStorage.clear();
     window.location.href = "/log-in";
+  };
+
+  // Funciones para el Slider
+  const nextSlide = () => {
+    setCurrentSlide((prev) =>
+      prev === notifications.length - 1 ? 0 : prev + 1,
+    );
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) =>
+      prev === 0 ? notifications.length - 1 : prev - 1,
+    );
   };
 
   const menuItems = [
@@ -182,7 +212,6 @@ const StudentReportLayout = () => {
       <aside
         className={`fixed h-screen inset-y-0 top-0 left-0 z-50 w-72 bg-slate-900 text-white transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 lg:static lg:inset-0 shadow-2xl flex flex-col`}
       >
-        {/* 🟢 MODIFICADO: Contenedor del Logo y Aula en el Sidebar */}
         <div className="p-6 flex flex-col gap-5 border-b border-slate-800">
           <Link to="/" className="flex items-center gap-4">
             <img src="/logo.png" className="w-12 h-12" alt="Logo Colegio" />
@@ -281,7 +310,6 @@ const StudentReportLayout = () => {
             <Dropdown placement="bottom-end" backdrop="blur">
               <DropdownTrigger>
                 <div className="flex items-center gap-2 sm:gap-3 cursor-pointer group p-1 rounded-2xl transition-all">
-                  {/* 🟢 MODIFICADO: Ahora el flex se muestra en celulares también */}
                   <div className="flex flex-col items-end leading-none text-white lg:text-slate-900">
                     <span className="text-[10px] font-black uppercase max-w-20 sm:max-w-37.5 truncate text-right">
                       {perfil?.name}
@@ -376,59 +404,101 @@ const StudentReportLayout = () => {
             <Outlet context={{ dataStudent, dataClassroomId, classroomId }} />
           </div>
 
-          {/* Modal de Alertas (Notificaciones) */}
-          {showNotifications && (
-            <div
-              className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-sm"
-              onClick={() => setShowNotifications(false)}
-            >
-              <div
-                className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in duration-300"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="bg-slate-900 p-6 flex justify-between items-center">
-                  <h3 className="text-white font-black uppercase text-xs tracking-[0.3em] flex items-center gap-3">
-                    <Bell size={18} className="text-yellow-500" /> Alertas
-                    Recientes
-                  </h3>
-                  <button
-                    onClick={() => setShowNotifications(false)}
-                    className="text-slate-500 hover:text-white transition-colors"
-                  >
-                    <X size={24} />
-                  </button>
-                </div>
-                <div className="p-6 max-h-[60vh] overflow-y-auto space-y-4">
-                  {notifications.length > 0 ? (
-                    notifications.map((n) => (
-                      <div
-                        key={n.id}
-                        className="bg-slate-50 p-4 rounded-2xl flex items-center gap-4 border border-slate-100 hover:border-yellow-200 transition-all"
-                      >
-                        <img
-                          src={n.notificationImg}
-                          className="w-16 h-16 rounded-xl object-cover shadow-md"
-                          alt="aviso"
-                        />
-                        <p className="font-bold text-slate-700 text-sm leading-tight">
-                          {n.title}
+          {/* 🟢 MODAL DE HEROUI PARA NOTIFICACIONES */}
+          <Modal
+            isOpen={showNotifications}
+            onOpenChange={setShowNotifications}
+            backdrop="blur"
+            size="4xl"
+            classNames={{
+              base: "bg-white rounded-[2rem] shadow-2xl overflow-hidden",
+              header:
+                "bg-slate-900 p-5 flex justify-between items-center z-10 border-b-0",
+              body: "p-6 relative bg-slate-50 min-h-[80vh] max-h-[80vh] flex flex-col justify-center",
+              closeButton:
+                "text-white bg-red-500/40 text-xl font-black  hover:text-white p-2 rounded-full transition-colors z-20 top-4 right-4",
+            }}
+            placement="center"
+          >
+            <ModalContent>
+              {() => (
+                <>
+                  <ModalHeader>
+                    <h3 className="text-white font-black uppercase text-xs tracking-[0.3em] flex items-center gap-3">
+                      <Bell size={18} className="text-yellow-500" /> Avisos
+                      Importantes
+                    </h3>
+                  </ModalHeader>
+                  <ModalBody>
+                    {notifications.length > 0 ? (
+                      <div className="flex flex-col items-center justify-center w-full h-full animate-in fade-in duration-500">
+                        {/* Imagen destacada */}
+                        <div className="w-full h-fit max-h-[70vh] mb-6 relative rounded-2xl overflow-hidden shadow-lg border border-slate-200 bg-white flex shrink-0">
+                          <img
+                            src={`${SERVERIMG}/${notifications[currentSlide].notificationImg}`}
+                            className="w-full h-full object-contain p-2"
+                            alt="Notificación"
+                          />
+                        </div>
+
+                        {/* Título de la notificación */}
+                        <h4 className="text-center font-black text-slate-800 text-lg sm:text-xl leading-tight px-4 line-clamp-3">
+                          {notifications[currentSlide].title}
+                        </h4>
+
+                        {/* Controles del Slider */}
+                        {notifications.length > 1 && (
+                          <div className="absolute inset-y-0 left-0 right-0 flex justify-between items-center px-2 pointer-events-none">
+                            <button
+                              onClick={prevSlide}
+                              className="w-10 h-10 bg-white border border-slate-200 text-slate-800 rounded-full flex items-center justify-center shadow-lg pointer-events-auto hover:bg-slate-100 hover:scale-110 transition-all z-10 -ml-4"
+                            >
+                              <ChevronLeft size={24} />
+                            </button>
+                            <button
+                              onClick={nextSlide}
+                              className="w-10 h-10 bg-white border border-slate-200 text-slate-800 rounded-full flex items-center justify-center shadow-lg pointer-events-auto hover:bg-slate-100 hover:scale-110 transition-all z-10 -mr-4"
+                            >
+                              <ChevronRight size={24} />
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Indicadores (Dots) */}
+                        {notifications.length > 1 && (
+                          <div className="flex justify-center gap-2 mt-6">
+                            {notifications.map((_, idx) => (
+                              <div
+                                key={idx}
+                                className={`h-2 rounded-full transition-all duration-300 ${
+                                  currentSlide === idx
+                                    ? "w-6 bg-yellow-500"
+                                    : "w-2 bg-slate-300"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      // Estado Vacío
+                      <div className="py-12 text-center space-y-4 flex flex-col items-center justify-center h-full">
+                        <div className="bg-white w-20 h-20 rounded-full flex items-center justify-center mx-auto text-slate-300 shadow-sm border border-slate-100">
+                          <Bell size={40} />
+                        </div>
+                        <h4 className="text-slate-800 font-bold text-lg">
+                          No hay avisos
+                        </h4>
+                        <p className="text-slate-500 font-medium text-sm">
+                          Estás al día con todas las notificaciones.
                         </p>
                       </div>
-                    ))
-                  ) : (
-                    <div className="py-12 text-center space-y-3">
-                      <div className="bg-slate-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto text-slate-300">
-                        <Bell size={32} />
-                      </div>
-                      <p className="text-slate-400 font-medium italic">
-                        Sin alertas nuevas en este momento
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
+                    )}
+                  </ModalBody>
+                </>
+              )}
+            </ModalContent>
+          </Modal>
         </main>
       </div>
 

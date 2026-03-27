@@ -39,7 +39,6 @@ export default function Login() {
         navigate("/reporte-estudiante");
         window.location.reload();
       } catch (err) {
-        console.error(err);
         toast.error("DNI o contraseña incorrectos");
       } finally {
         setLoading(false);

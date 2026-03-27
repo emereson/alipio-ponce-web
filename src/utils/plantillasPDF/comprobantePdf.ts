@@ -364,9 +364,7 @@ const plantillaComprobantePdf = async (
         150,
         doc.lastAutoTable.finalY + 37,
       );
-    } catch (error) {
-      console.error("Error generando QR", error);
-    }
+    } catch (error) {}
   }
 
   const pageHeight = doc.internal.pageSize.height;

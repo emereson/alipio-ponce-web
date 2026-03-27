@@ -65,7 +65,6 @@ const ModalAddFile = ({
         findFiles();
         handleClose();
       } catch (err) {
-        console.error(err);
         toast.error("No se pudo subir el archivo. Intenta nuevamente.");
       } finally {
         setLoading(false);
