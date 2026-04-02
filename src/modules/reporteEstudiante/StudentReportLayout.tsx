@@ -27,7 +27,7 @@ import {
   DropdownMenu,
   DropdownItem,
   DropdownSection,
-  Modal, // 🟢 Importamos los componentes del Modal de HeroUI
+  Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
@@ -82,16 +82,10 @@ const StudentReportLayout = () => {
   const [classroomId, setClassroomId] = useState<number | string>("");
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  // Estados para UI
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  // 🟢 Iniciamos en 'false' para que no parpadee al cargar la página
   const [showNotifications, setShowNotifications] = useState(false);
-
-  // Estado para controlar el índice actual del slider
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Carga inicial
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -106,7 +100,6 @@ const StudentReportLayout = () => {
         setDataStudent(student);
         setNotifications(fetchedNotifications);
 
-        // 🟢 Abrimos el modal SOLO si llegaron notificaciones
         if (fetchedNotifications.length > 0) {
           setShowNotifications(true);
         }
@@ -120,7 +113,6 @@ const StudentReportLayout = () => {
     fetchInitialData();
   }, []);
 
-  // Sincronizar Classroom ID
   useEffect(() => {
     if (!dataStudent || !dataClassroomId) return;
     const classroom = dataStudent.classrooms_students.find(
@@ -134,7 +126,6 @@ const StudentReportLayout = () => {
     window.location.href = "/log-in";
   };
 
-  // Funciones para el Slider
   const nextSlide = () => {
     setCurrentSlide((prev) =>
       prev === notifications.length - 1 ? 0 : prev + 1,
@@ -212,6 +203,7 @@ const StudentReportLayout = () => {
       <aside
         className={`fixed h-screen inset-y-0 top-0 left-0 z-50 w-72 bg-slate-900 text-white transform transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 lg:static lg:inset-0 shadow-2xl flex flex-col`}
       >
+        {/* ... (Contenido del sidebar igual) ... */}
         <div className="p-6 flex flex-col gap-5 border-b border-slate-800">
           <Link to="/" className="flex items-center gap-4">
             <img src="/logo.png" className="w-12 h-12" alt="Logo Colegio" />
@@ -224,8 +216,6 @@ const StudentReportLayout = () => {
               </span>
             </div>
           </Link>
-
-          {/* Tarjeta del Aula Actual */}
           <div className="bg-slate-800/50 p-3 rounded-xl border border-slate-700/50 flex items-center gap-3">
             <div className="bg-slate-900 p-2 rounded-lg">
               <School size={16} className="text-amber-500" />
@@ -281,6 +271,7 @@ const StudentReportLayout = () => {
       <div className="flex-1 flex flex-col min-w-0">
         {/* TOPBAR */}
         <header className="h-20 bg-slate-900 lg:bg-slate-50 border-b border-slate-200 flex items-center justify-between px-6 sticky top-0 z-40">
+          {/* ... (Contenido del Topbar igual) ... */}
           <button
             className="lg:hidden p-2 text-amber-400 hover:bg-slate-800 rounded-xl transition-colors"
             onClick={() => setIsSidebarOpen(true)}
@@ -289,7 +280,6 @@ const StudentReportLayout = () => {
           </button>
 
           <div className="flex items-center gap-4 sm:gap-5 ml-auto">
-            {/* Notificaciones */}
             <Badge
               content={notifications.length}
               color="danger"
@@ -306,7 +296,6 @@ const StudentReportLayout = () => {
               </Button>
             </Badge>
 
-            {/* PERFIL UNIFICADO CON CAMBIO DE AULA */}
             <Dropdown placement="bottom-end" backdrop="blur">
               <DropdownTrigger>
                 <div className="flex items-center gap-2 sm:gap-3 cursor-pointer group p-1 rounded-2xl transition-all">
@@ -318,7 +307,6 @@ const StudentReportLayout = () => {
                       {currentAulaName}
                     </span>
                   </div>
-
                   <Avatar
                     isBordered
                     color="warning"
@@ -404,19 +392,19 @@ const StudentReportLayout = () => {
             <Outlet context={{ dataStudent, dataClassroomId, classroomId }} />
           </div>
 
-          {/* 🟢 MODAL DE HEROUI PARA NOTIFICACIONES */}
+          {/* MODAL CORREGIDO */}
           <Modal
             isOpen={showNotifications}
             onOpenChange={setShowNotifications}
             backdrop="blur"
             size="4xl"
             classNames={{
-              base: "bg-white rounded-[2rem] shadow-2xl overflow-hidden",
+              base: "bg-white h-[85vh] rounded-[1rem] shadow-2xl overflow-hidden flex flex-col",
               header:
-                "bg-slate-900 p-5 flex justify-between items-center z-10 border-b-0",
-              body: "p-6 relative bg-slate-50 min-h-[80vh] max-h-[80vh] flex flex-col justify-center",
+                "bg-slate-900 p-5 flex justify-between items-center z-10 shrink-0",
+              body: "p-0 relative bg-slate-50 flex-1 flex flex-col min-h-0", // min-h-0 es clave para el scroll en flex
               closeButton:
-                "text-white bg-red-500/40 text-xl font-black  hover:text-white p-2 rounded-full transition-colors z-20 top-4 right-4",
+                "text-white bg-red-500/40 text-xl font-black hover:text-white p-2 rounded-full transition-colors z-20 top-4 right-4",
             }}
             placement="center"
           >
@@ -429,44 +417,47 @@ const StudentReportLayout = () => {
                       Importantes
                     </h3>
                   </ModalHeader>
+
                   <ModalBody>
                     {notifications.length > 0 ? (
-                      <div className="flex flex-col items-center justify-center w-full h-full animate-in fade-in duration-500">
-                        {/* Imagen destacada */}
-                        <div className="w-full h-fit max-h-[70vh] mb-6 relative rounded-2xl overflow-hidden shadow-lg border border-slate-200 bg-white flex shrink-0">
+                      <div className="flex flex-col w-full h-full animate-in fade-in duration-500 relative">
+                        {/* Título - Fijo arriba */}
+                        <div className="p-4 shrink-0 z-10 bg-slate-50">
+                          <h4 className="text-center font-black text-slate-800 text-lg sm:text-xl leading-tight line-clamp-3">
+                            {notifications[currentSlide].title}
+                          </h4>
+                        </div>
+
+                        {/* Contenedor de la Imagen con Scroll */}
+                        <div className="flex-1 overflow-y-auto px-12 sm:px-16 pb-4 flex justify-center items-start">
                           <img
                             src={`${SERVERIMG}/${notifications[currentSlide].notificationImg}`}
-                            className="w-full h-full object-contain p-2"
+                            className="w-full max-w-3xl h-auto rounded-lg shadow-sm border border-slate-200"
                             alt="Notificación"
                           />
                         </div>
 
-                        {/* Título de la notificación */}
-                        <h4 className="text-center font-black text-slate-800 text-lg sm:text-xl leading-tight px-4 line-clamp-3">
-                          {notifications[currentSlide].title}
-                        </h4>
-
-                        {/* Controles del Slider */}
+                        {/* Controles (Flechas) - Absolutos al ModalBody para que no hagan scroll */}
                         {notifications.length > 1 && (
-                          <div className="absolute inset-y-0 left-0 right-0 flex justify-between items-center px-2 pointer-events-none">
+                          <>
                             <button
                               onClick={prevSlide}
-                              className="w-10 h-10 bg-white border border-slate-200 text-slate-800 rounded-full flex items-center justify-center shadow-lg pointer-events-auto hover:bg-slate-100 hover:scale-110 transition-all z-10 -ml-4"
+                              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white border border-slate-200 text-slate-800 rounded-full flex items-center justify-center shadow-lg hover:bg-slate-100 hover:scale-110 transition-all z-20"
                             >
                               <ChevronLeft size={24} />
                             </button>
                             <button
                               onClick={nextSlide}
-                              className="w-10 h-10 bg-white border border-slate-200 text-slate-800 rounded-full flex items-center justify-center shadow-lg pointer-events-auto hover:bg-slate-100 hover:scale-110 transition-all z-10 -mr-4"
+                              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white border border-slate-200 text-slate-800 rounded-full flex items-center justify-center shadow-lg hover:bg-slate-100 hover:scale-110 transition-all z-20"
                             >
                               <ChevronRight size={24} />
                             </button>
-                          </div>
+                          </>
                         )}
 
-                        {/* Indicadores (Dots) */}
+                        {/* Indicadores (Dots) - Fijos abajo */}
                         {notifications.length > 1 && (
-                          <div className="flex justify-center gap-2 mt-6">
+                          <div className="shrink-0 py-4 bg-slate-50 border-t border-slate-200 flex justify-center gap-2">
                             {notifications.map((_, idx) => (
                               <div
                                 key={idx}
@@ -481,9 +472,8 @@ const StudentReportLayout = () => {
                         )}
                       </div>
                     ) : (
-                      // Estado Vacío
-                      <div className="py-12 text-center space-y-4 flex flex-col items-center justify-center h-full">
-                        <div className="bg-white w-20 h-20 rounded-full flex items-center justify-center mx-auto text-slate-300 shadow-sm border border-slate-100">
+                      <div className="py-12 text-center flex flex-col items-center justify-center h-full">
+                        <div className="bg-white w-20 h-20 rounded-full flex items-center justify-center mx-auto text-slate-300 shadow-sm border border-slate-100 mb-4">
                           <Bell size={40} />
                         </div>
                         <h4 className="text-slate-800 font-bold text-lg">
