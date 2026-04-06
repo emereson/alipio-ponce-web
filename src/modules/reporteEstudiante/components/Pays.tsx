@@ -166,15 +166,8 @@ const Pays = () => {
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-4xl border border-slate-100 shadow-lg">
-            <h4 className="text-slate-900 font-black text-[10px] uppercase tracking-[0.2em] mb-4">
-              Información de Boletas
-            </h4>
-            <p className="text-slate-500 text-[10px] leading-relaxed">
-              Las boletas de venta electrónicas son enviadas al correo
-              institucional registrado en el momento del pago. Si requiere un
-              duplicado, acérquese a Tesorería.
-            </p>
+          <div className="w-full h-fit bg-white p-0 overflow-hidden rounded-xl border border-slate-100 shadow-lg">
+            <img src="/pago.jpeg" alt="" />
           </div>
         </section>
       </div>
