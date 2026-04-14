@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { ChevronLeft, Calendar as CalendarIcon, Download } from "lucide-react";
 import { toast } from "sonner";
-import { API } from "../../../utils/api";
+import { API, SERVERIMG } from "../../../utils/api";
 import config from "../../../auth/auth.config";
 import { useNavigate } from "react-router-dom";
 
@@ -73,7 +73,7 @@ const Calendar = () => {
                     {calendar.name}
                   </h3>
                   <a
-                    href={calendar.calendarImg}
+                    href={`${SERVERIMG}/${calendar.calendarImg}`}
                     target="_blank"
                     rel="noreferrer"
                     className="p-2 bg-white/10 hover:bg-yellow-500 rounded-xl text-white hover:text-slate-900 transition-all"
@@ -86,7 +86,7 @@ const Calendar = () => {
                 {/* Imagen con efecto de Zoom */}
                 <div className="relative overflow-hidden aspect-4/3 md:aspect-video bg-slate-50">
                   <img
-                    src={calendar.calendarImg}
+                    src={`${SERVERIMG}/${calendar.calendarImg}`}
                     alt={calendar.name}
                     className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
                   />
