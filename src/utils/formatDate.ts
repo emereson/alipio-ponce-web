@@ -1,13 +1,16 @@
 // utils/formatDate.ts
 export function formatDate(dateString: string): string {
+  if (!dateString) return "-"; // Buena práctica por si llega vacío
+
   const date = new Date(dateString);
+
   return new Intl.DateTimeFormat("es-ES", {
     day: "2-digit",
     month: "short",
     year: "numeric",
+    timeZone: "UTC", // <-- ESTA ES LA SOLUCIÓN
   }).format(date);
 }
-
 // utils/formatDate.ts
 export function formatDateHoure(dateString: string): string {
   const date = new Date(dateString);
