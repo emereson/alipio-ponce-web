@@ -7,7 +7,7 @@ import {
   Award,
   PlayCircle,
   CheckCircle2,
-  Clock,
+  Lock,
 } from "lucide-react";
 import { Button, Card, CardBody, Chip, Divider, Spinner } from "@heroui/react";
 
@@ -103,19 +103,21 @@ const ExamsList = () => {
 
     return (
       <button
-        onClick={() => navigate(`/reporte-estudiante/evaluacion/${examen.id}`)}
-        className={`mt-4 w-full flex items-center justify-between p-3.5 rounded-xl border text-left transition-all hover:scale-[1.02] hover:shadow-md cursor-pointer group ${
+        onClick={() => {
+          if (!isTimeout) {
+            navigate(`/reporte-estudiante/evaluacion/${examen.id}`);
+          }
+        }}
+        disabled={isTimeout}
+        className={`mt-4 w-full flex items-center justify-between p-3.5 rounded-xl border text-left transition-all group ${
           isTimeout
-            ? "bg-red-50/50 border-red-200 hover:bg-red-50"
-            : "bg-green-50/50 border-green-200 hover:bg-green-50"
+            ? "bg-red-50/30 border-red-100 opacity-60 cursor-not-allowed grayscale-20" // Estilos de bloqueado
+            : "bg-green-50/50 border-green-200 hover:bg-green-50 hover:scale-[1.02] hover:shadow-md cursor-pointer" // Estilos activos
         }`}
       >
         <div className="flex items-center gap-3">
           {isTimeout ? (
-            <Clock
-              size={20}
-              className="text-red-500 group-hover:scale-110 transition-transform"
-            />
+            <Lock size={20} className="text-red-400" />
           ) : (
             <CheckCircle2
               size={20}
@@ -125,13 +127,19 @@ const ExamsList = () => {
           <div className="flex flex-col">
             <span
               className={`text-[10px] font-black uppercase tracking-widest ${
-                isTimeout ? "text-red-600" : "text-green-700"
+                isTimeout ? "text-red-500" : "text-green-700"
               }`}
             >
               {isTimeout ? "Tiempo Agotado" : "Completado"}
             </span>
-            <span className="text-[11px] font-semibold text-slate-500 group-hover:text-slate-700 transition-colors">
-              Ver detalle del examen
+            <span
+              className={`text-[11px] font-semibold transition-colors ${
+                isTimeout
+                  ? "text-red-400/80"
+                  : "text-slate-500 group-hover:text-slate-700"
+              }`}
+            >
+              {isTimeout ? "Examen bloqueado" : "Ver detalle del examen"}
             </span>
           </div>
         </div>
@@ -142,7 +150,7 @@ const ExamsList = () => {
           </span>
           <span
             className={`text-xl font-black leading-none ${
-              isTimeout ? "text-red-600" : "text-green-600"
+              isTimeout ? "text-red-500" : "text-green-600"
             }`}
           >
             {nota}{" "}
