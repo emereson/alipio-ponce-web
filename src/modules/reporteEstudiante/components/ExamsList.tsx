@@ -63,19 +63,27 @@ const ExamsList = () => {
   // 2. Función para renderizar la acción según el estado
   const renderAccionEvaluacion = (examen: Exam) => {
     const resultado = examen.resultados_evaluacion;
+    const isActivo = examen.status === "ACTIVO";
 
     // CASO A: No ha iniciado el examen
     if (!resultado) {
       return (
         <Button
           fullWidth
-          className="bg-slate-900 text-white font-black uppercase tracking-widest rounded-xl h-12 mt-4 hover:scale-[1.02] transition-transform shadow-md"
-          startContent={<PlayCircle size={18} />}
+          isDisabled={!isActivo}
+          className={`font-black uppercase tracking-widest rounded-xl h-12 mt-4 shadow-md transition-all ${
+            isActivo
+              ? "bg-slate-900 text-white hover:scale-[1.02]"
+              : "bg-slate-100 text-slate-400 opacity-70 cursor-not-allowed"
+          }`}
+          startContent={
+            isActivo ? <PlayCircle size={18} /> : <Lock size={18} />
+          }
           onPress={() =>
-            navigate(`/reporte-estudiante/evaluacion/${examen.id}`)
+            isActivo && navigate(`/reporte-estudiante/evaluacion/${examen.id}`)
           }
         >
-          Rendir Examen
+          {isActivo ? "Rendir Examen" : "No Disponible"}
         </Button>
       );
     }
@@ -85,14 +93,19 @@ const ExamsList = () => {
       return (
         <Button
           fullWidth
-          color="warning"
-          className="font-black text-slate-900 uppercase tracking-widest rounded-xl h-12 mt-4 shadow-md hover:scale-[1.02] transition-transform"
-          startContent={<Timer size={18} />}
+          color={isActivo ? "warning" : "default"}
+          isDisabled={!isActivo}
+          className={`font-black uppercase tracking-widest rounded-xl h-12 mt-4 shadow-md transition-all ${
+            isActivo
+              ? "text-slate-900 hover:scale-[1.02]"
+              : "bg-slate-100 text-slate-400 opacity-70 cursor-not-allowed"
+          }`}
+          startContent={isActivo ? <Timer size={18} /> : <Lock size={18} />}
           onPress={() =>
-            navigate(`/reporte-estudiante/evaluacion/${examen.id}`)
+            isActivo && navigate(`/reporte-estudiante/evaluacion/${examen.id}`)
           }
         >
-          Continuar Examen
+          {isActivo ? "Continuar Examen" : "No Disponible"}
         </Button>
       );
     }
