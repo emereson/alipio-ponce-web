@@ -23,7 +23,7 @@ const RANK_SYSTEM = [
   {
     id: "BRONCE",
     min: 0,
-    next: 221,
+    next: 501,
     color: "text-orange-700",
     bg: "bg-orange-700/20",
     glow: "drop-shadow-[0_0_10px_rgba(194,65,12,0.8)]",
@@ -32,8 +32,8 @@ const RANK_SYSTEM = [
   },
   {
     id: "PLATA",
-    min: 221,
-    next: 441,
+    min: 501,
+    next: 1001,
     color: "text-slate-300",
     bg: "bg-slate-300/20",
     glow: "drop-shadow-[0_0_10px_rgba(203,213,225,0.8)]",
@@ -42,8 +42,8 @@ const RANK_SYSTEM = [
   },
   {
     id: "ORO",
-    min: 441,
-    next: 661,
+    min: 1001,
+    next: 1501,
     color: "text-yellow-400",
     bg: "bg-yellow-400/20",
     glow: "drop-shadow-[0_0_10px_rgba(250,204,21,0.8)]",
@@ -52,8 +52,8 @@ const RANK_SYSTEM = [
   },
   {
     id: "PLATINO",
-    min: 661,
-    next: 881,
+    min: 1501,
+    next: 2001,
     color: "text-teal-300",
     bg: "bg-teal-300/20",
     glow: "drop-shadow-[0_0_10px_rgba(94,234,212,0.8)]",
@@ -62,8 +62,8 @@ const RANK_SYSTEM = [
   },
   {
     id: "DIAMANTE",
-    min: 881,
-    next: 1101,
+    min: 2001,
+    next: 2501,
     color: "text-cyan-400",
     bg: "bg-cyan-400/20",
     glow: "drop-shadow-[0_0_15px_rgba(34,211,238,1)]",
@@ -72,8 +72,8 @@ const RANK_SYSTEM = [
   },
   {
     id: "HEROICO",
-    min: 1101,
-    next: 1321,
+    min: 2501,
+    next: 3001,
     color: "text-fuchsia-500",
     bg: "bg-fuchsia-500/20",
     glow: "drop-shadow-[0_0_15px_rgba(217,70,239,1)]",
@@ -82,7 +82,7 @@ const RANK_SYSTEM = [
   },
   {
     id: "GRAN MAESTRO",
-    min: 1321,
+    min: 3001,
     next: 9999,
     color: "text-red-500",
     bg: "bg-red-500/20",
@@ -222,7 +222,7 @@ export default function ProgressLevel() {
   }, [levelData]);
 
   const progressPercentage = levelData
-    ? levelData.total_points >= 1321
+    ? levelData.total_points >= 3001
       ? 100
       : (levelData.total_points / progressData.nextPts) * 100
     : 0;
@@ -367,7 +367,7 @@ export default function ProgressLevel() {
                 <span className="text-xs text-slate-400 font-bold tracking-widest">
                   EXP
                 </span>
-                {levelData.total_points < 1321 && (
+                {levelData.total_points < 3001 && (
                   <span className="text-sm text-slate-500 font-bold ml-2">
                     / {progressData.nextPts.toLocaleString()}
                   </span>
@@ -388,7 +388,7 @@ export default function ProgressLevel() {
             <p
               className={`text-right text-[11px] mt-2 font-black uppercase tracking-widest ${currentRankInfo.color}`}
             >
-              {levelData.total_points >= 1321
+              {levelData.total_points >= 3001
                 ? "¡ESTÁS EN LA CIMA!"
                 : `PRÓXIMO RANGO: ${progressData.nextName}`}
             </p>
