@@ -8,7 +8,7 @@ export function formatDate(dateString: string): string {
     day: "2-digit",
     month: "short",
     year: "numeric",
-    timeZone: "UTC", // <-- ESTA ES LA SOLUCIÓN
+    timeZone: "UTC",
   }).format(date);
 }
 // utils/formatDate.ts
@@ -20,9 +20,9 @@ export function formatDateHoure(dateString: string): string {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    second: "2-digit", // opcional, puedes quitarlo si no quieres segundos
-    hour12: false, // usa formato 24h
-    timeZone: "America/Lima", // ajusta según tu zona
+    second: "2-digit",
+    hour12: false,
+    timeZone: "America/Lima",
   }).format(date);
 }
 

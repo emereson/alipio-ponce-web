@@ -17,6 +17,7 @@ import {
   ClipboardCheck,
   ChevronLeft,
   ChevronRight,
+  Trophy,
 } from "lucide-react";
 import {
   Avatar,
@@ -187,6 +188,12 @@ const StudentReportLayout = () => {
       icon: <ClipboardList size={28} />,
       color: "text-slate-400",
     },
+    {
+      label: "Mi Progreso",
+      path: "progreso", // Asegúrate de registrar esta ruta en tu Router
+      icon: <Trophy size={28} />,
+      color: "text-cyan-500",
+    },
   ];
 
   const classroom = dataStudent?.classrooms_students.find(
@@ -310,7 +317,7 @@ const StudentReportLayout = () => {
                   <Avatar
                     isBordered
                     color="warning"
-                    src={perfil?.studentImg || ""}
+                    src={`${SERVERIMG}/${perfil?.studentImg}` || ""}
                     className="w-9 h-9 sm:w-10 sm:h-10 shadow-sm"
                   />
                   <ChevronDown

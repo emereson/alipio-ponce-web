@@ -12,6 +12,7 @@ import {
   CreditCard,
   Calendar as CalendarIcon,
   ClipboardList,
+  Trophy, // 🟢 Nuevo icono importado
 } from "lucide-react";
 import { useAuthStore } from "../../auth/auth.store";
 
@@ -29,7 +30,7 @@ export default function StudentDashboard() {
     ? `${classroom.classroom.name} - ${classroom.classroom.year}`
     : "Sin Aula";
 
-  // Botones principales del Bento Grid (Mismos iconos y colores que pusiste)
+  // Botones principales del Bento Grid
   const dashboardItems = [
     {
       label: "Asistencia",
@@ -72,6 +73,13 @@ export default function StudentDashboard() {
       path: "observaciones",
       icon: <ClipboardList size={28} />,
       color: "text-slate-400",
+    },
+    // 🟢 Nuevo acceso al módulo de Progreso/Nivel
+    {
+      label: "Mi Progreso",
+      path: "progreso", // Asegúrate de registrar esta ruta en tu Router
+      icon: <Trophy size={28} />,
+      color: "text-cyan-500",
     },
   ];
 

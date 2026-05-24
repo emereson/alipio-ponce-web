@@ -22,6 +22,7 @@ import Files from "./modules/reporteEstudiante/components/Files";
 import MyFiles from "./modules/reporteEstudiante/components/MyFiles/MyFiles";
 import Evaluacion from "./modules/reporteEstudiante/components/evaluacion/Evaluacion";
 import RevisionEvaluacion from "./modules/reporteEstudiante/components/RevisionEvaluacion";
+import ProgressLevel from "./modules/reporteEstudiante/components/ProgressLevel";
 
 // 1. Creamos un componente Layout para las rutas públicas
 const PublicLayout = () => {
@@ -64,6 +65,8 @@ function App() {
             <Route path="calendario" element={<Calendar />} />
             <Route path="observaciones" element={<Observation />} />
             <Route path="archivos" element={<Files />} />
+            <Route path="progreso" element={<ProgressLevel />} />
+
             <Route path="mis-archivos" element={<MyFiles />} />
             <Route path="evaluacion/:id" element={<Evaluacion />} />
             <Route
