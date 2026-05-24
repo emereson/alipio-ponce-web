@@ -324,7 +324,13 @@ export default function ProgressLevel() {
           <div className="flex items-center gap-4 w-full lg:w-1/3 border-b lg:border-b-0 lg:border-r border-slate-700 pb-6 lg:pb-0 lg:pr-6">
             <div className="w-20 h-20 rounded-xl bg-linear-to-br from-cyan-400 to-blue-600 p-0.5 shrink-0 shadow-[0_0_15px_rgba(34,211,238,0.4)]">
               <img
-                src={`${SERVERIMG}/${perfil?.studentImg}` || ""}
+                src={
+                  perfil?.studentImg
+                    ? perfil?.studentImg.startsWith("http")
+                      ? perfil?.studentImg
+                      : `${SERVERIMG}/${perfil?.studentImg}`
+                    : "/avatar-default.png"
+                }
                 alt="Avatar"
                 className="w-full h-full rounded-xl bg-[#171c2b]"
               />
