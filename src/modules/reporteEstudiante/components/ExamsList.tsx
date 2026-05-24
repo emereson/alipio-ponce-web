@@ -8,6 +8,8 @@ import {
   PlayCircle,
   CheckCircle2,
   Lock,
+  CalendarClock,
+  CalendarX2,
 } from "lucide-react";
 import { Button, Card, CardBody, Chip, Divider, Spinner } from "@heroui/react";
 
@@ -15,6 +17,8 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import { API } from "../../../utils/api";
 import config from "../../../auth/auth.config";
 import { handleAxiosError } from "../../../utils/errorHandler";
+// Importamos tu función para formatear la fecha con hora
+import { formatDateHoure } from "../../../utils/formatDate";
 
 // 1. Interfaces para tipar correctamente los datos
 interface ResultadoEvaluacion {
@@ -30,6 +34,7 @@ interface Exam {
   limite_tiempo: number;
   puntos: number;
   status: string;
+  fecha_disponible: string; // 🟢 Agregado
   fecha_entrega: string;
   resultados_evaluacion?: ResultadoEvaluacion | null;
 }
@@ -60,10 +65,25 @@ const ExamsList = () => {
       .finally(() => setLoading(false));
   }, [classroomId]);
 
-  // 2. Función para renderizar la acción según el estado
+  // 2. Función para renderizar la acción según el estado y la fecha
   const renderAccionEvaluacion = (examen: Exam) => {
     const resultado = examen.resultados_evaluacion;
-    const isActivo = examen.status === "ACTIVO";
+
+    // 🟢 Validaciones de estado y fecha
+    const isStatusActivo = examen.status === "ACTIVO";
+    const isTimeAvailable = new Date() >= new Date(examen.fecha_disponible);
+    const isActivo = isStatusActivo && isTimeAvailable;
+
+    // Determinamos qué icono y texto mostrar si está bloqueado
+    const getBlockedInfo = () => {
+      if (!isStatusActivo)
+        return { text: "Examen Inactivo", icon: <Lock size={18} /> };
+      if (!isTimeAvailable)
+        return { text: "Aún no disponible", icon: <CalendarClock size={18} /> };
+      return null;
+    };
+
+    const blockedInfo = getBlockedInfo();
 
     // CASO A: No ha iniciado el examen
     if (!resultado) {
@@ -76,14 +96,12 @@ const ExamsList = () => {
               ? "bg-slate-900 text-white hover:scale-[1.02]"
               : "bg-slate-100 text-slate-400 opacity-70 cursor-not-allowed"
           }`}
-          startContent={
-            isActivo ? <PlayCircle size={18} /> : <Lock size={18} />
-          }
+          startContent={isActivo ? <PlayCircle size={18} /> : blockedInfo?.icon}
           onPress={() =>
             isActivo && navigate(`/reporte-estudiante/evaluacion/${examen.id}`)
           }
         >
-          {isActivo ? "Rendir Examen" : "No Disponible"}
+          {isActivo ? "Rendir Examen" : blockedInfo?.text}
         </Button>
       );
     }
@@ -100,12 +118,12 @@ const ExamsList = () => {
               ? "text-slate-900 hover:scale-[1.02]"
               : "bg-slate-100 text-slate-400 opacity-70 cursor-not-allowed"
           }`}
-          startContent={isActivo ? <Timer size={18} /> : <Lock size={18} />}
+          startContent={isActivo ? <Timer size={18} /> : blockedInfo?.icon}
           onPress={() =>
             isActivo && navigate(`/reporte-estudiante/evaluacion/${examen.id}`)
           }
         >
-          {isActivo ? "Continuar Examen" : "No Disponible"}
+          {isActivo ? "Continuar Examen" : blockedInfo?.text}
         </Button>
       );
     }
@@ -124,8 +142,8 @@ const ExamsList = () => {
         disabled={isTimeout}
         className={`mt-4 w-full flex items-center justify-between p-3.5 rounded-xl border text-left transition-all group ${
           isTimeout
-            ? "bg-red-50/30 border-red-100 opacity-60 cursor-not-allowed grayscale-20" // Estilos de bloqueado
-            : "bg-green-50/50 border-green-200 hover:bg-green-50 hover:scale-[1.02] hover:shadow-md cursor-pointer" // Estilos activos
+            ? "bg-red-50/30 border-red-100 opacity-60 cursor-not-allowed grayscale-20"
+            : "bg-green-50/50 border-green-200 hover:bg-green-50 hover:scale-[1.02] hover:shadow-md cursor-pointer"
         }`}
       >
         <div className="flex items-center gap-3">
@@ -232,12 +250,37 @@ const ExamsList = () => {
                         </Chip>
                       </div>
 
-                      <div className="flex gap-5 text-slate-500 font-bold text-xs mb-4 flex-1">
-                        <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                      {/* 🟢 SECCIÓN DE FECHAS */}
+                      <div className="flex flex-col gap-2 bg-slate-50 p-3.5 rounded-xl border border-slate-100 mb-4">
+                        <div className="flex items-center justify-between text-xs text-slate-600">
+                          <div className="flex items-center gap-1.5 font-bold">
+                            <CalendarClock
+                              size={14}
+                              className="text-blue-500"
+                            />
+                            Disponible:
+                          </div>
+                          <span className="font-semibold text-slate-800">
+                            {formatDateHoure(examen.fecha_disponible)}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-slate-600">
+                          <div className="flex items-center gap-1.5 font-bold">
+                            <CalendarX2 size={14} className="text-red-500" />
+                            Cierre:
+                          </div>
+                          <span className="font-semibold text-slate-800">
+                            {formatDateHoure(examen.fecha_entrega)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-4 text-slate-500 font-bold text-xs mb-4 flex-1">
+                        <div className="flex-1 flex items-center justify-center gap-1.5 bg-slate-50 py-2 rounded-xl border border-slate-100">
                           <Timer size={14} className="text-blue-500" />{" "}
                           {examen.limite_tiempo} min
                         </div>
-                        <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+                        <div className="flex-1 flex items-center justify-center gap-1.5 bg-slate-50 py-2 rounded-xl border border-slate-100">
                           <Award size={14} className="text-amber-500" />{" "}
                           {examen.puntos} pts
                         </div>
