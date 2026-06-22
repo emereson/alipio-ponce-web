@@ -12,7 +12,8 @@ import {
   CreditCard,
   Calendar as CalendarIcon,
   ClipboardList,
-  Trophy, // 🟢 Nuevo icono importado
+  Trophy,
+  FormIcon, // 🟢 Nuevo icono importado
 } from "lucide-react";
 import { useAuthStore } from "../../auth/auth.store";
 
@@ -37,6 +38,12 @@ export default function StudentDashboard() {
       path: "asistencia",
       icon: <UserCheck size={28} />,
       color: "text-blue-500",
+    },
+    {
+      label: "Foro Estudiantil",
+      path: "foro-estudiantil",
+      icon: <FormIcon size={28} />,
+      color: "text-pink-500",
     },
     {
       label: "Notas",

@@ -23,6 +23,7 @@ import MyFiles from "./modules/reporteEstudiante/components/MyFiles/MyFiles";
 import Evaluacion from "./modules/reporteEstudiante/components/evaluacion/Evaluacion";
 import RevisionEvaluacion from "./modules/reporteEstudiante/components/RevisionEvaluacion";
 import ProgressLevel from "./modules/reporteEstudiante/components/ProgressLevel";
+import ForoEstudiantil from "./modules/reporteEstudiante/components/foroEstudiantil/ForoEstudiantil";
 
 // 1. Creamos un componente Layout para las rutas públicas
 const PublicLayout = () => {
@@ -57,6 +58,7 @@ function App() {
         <Route element={<PrivateGuard />}>
           <Route path="reporte-estudiante" element={<StudentReportLayout />}>
             <Route index element={<StudentDashboard />} />
+            <Route path="foro-estudiantil" element={<ForoEstudiantil />} />
             <Route path="asistencia" element={<Attendance />} />
             <Route path="notas" element={<Notes />} />
             <Route path="evaluaciones" element={<ExamsList />} />

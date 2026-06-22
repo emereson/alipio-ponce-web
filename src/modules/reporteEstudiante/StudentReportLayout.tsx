@@ -18,6 +18,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Trophy,
+  FormIcon,
 } from "lucide-react";
 import {
   Avatar,
@@ -145,6 +146,12 @@ const StudentReportLayout = () => {
       path: "/reporte-estudiante",
       icon: <LayoutDashboard size={28} />,
       color: "text-slate-400",
+    },
+    {
+      label: "Foro Estudiantil",
+      path: "/reporte-estudiante/foro-estudiantil",
+      icon: <FormIcon size={28} />,
+      color: "text-pink-500",
     },
     {
       label: "Asistencia",

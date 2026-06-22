@@ -240,6 +240,17 @@ export default function ProgressLevel() {
   // INSIGNIAS "GAMER" RENDERIZADAS DESDE IMAGEN
   // =========================================================
 
+  const miPuesto = useMemo(() => {
+    if (!leaderboard || leaderboard.length === 0 || !perfil?.id) return "-";
+
+    const index = leaderboard.findIndex(
+      (user: any) => user.student_id === perfil.id,
+    );
+    return index !== -1 ? `#${index + 1}` : "+99";
+  }, [leaderboard, perfil]);
+
+  console.log(miPuesto);
+
   // Insignia grande para la tarjeta principal
   const renderBigRankBadge = (rankId: string) => {
     const rankInfo =
@@ -401,7 +412,11 @@ export default function ProgressLevel() {
           <div className="lg:col-span-4 flex flex-col items-center p-8 bg-linear-to-b from-slate-800/80 to-slate-900 rounded-2xl border border-slate-700 text-center relative overflow-hidden group">
             {/* Destello al hacer hover */}
             <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-
+            <p
+              className={`text-2xl font-black uppercase tracking-[0.15em] italic drop-shadow-lg mb-1 ${currentRankInfo.color}`}
+            >
+              {miPuesto}
+            </p>
             <div className="h-40 w-full flex items-center justify-center mb-4">
               {renderBigRankBadge(levelData.rank)}
             </div>
@@ -481,7 +496,7 @@ export default function ProgressLevel() {
           </div>
 
           {/* RANKING (LEADERBOARD) */}
-          <div className="lg:col-span-4 bg-[#0f131f] rounded-2xl border border-slate-700 overflow-hidden flex flex-col shadow-xl">
+          <div className="lg:col-span-4  max-h-120 bg-[#0f131f] rounded-2xl border border-slate-700 overflow-hidden flex flex-col shadow-xl">
             <div className="p-4 border-b border-slate-800 bg-slate-900 flex justify-between items-center">
               <h4 className="text-xs font-black text-white uppercase tracking-[0.2em] italic">
                 Top Jugadores
