@@ -272,6 +272,7 @@ export default function CardForoEstudiante({ foro }: CardProps) {
           />
         </div>
       </div>
+
     </div>
   );
 }

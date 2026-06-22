@@ -249,8 +249,6 @@ export default function ProgressLevel() {
     return index !== -1 ? `#${index + 1}` : "+99";
   }, [leaderboard, perfil]);
 
-  console.log(miPuesto);
-
   // Insignia grande para la tarjeta principal
   const renderBigRankBadge = (rankId: string) => {
     const rankInfo =
