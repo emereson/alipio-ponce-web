@@ -22,7 +22,7 @@ import Files from "./modules/reporteEstudiante/components/Files";
 import MyFiles from "./modules/reporteEstudiante/components/MyFiles/MyFiles";
 import Evaluacion from "./modules/reporteEstudiante/components/evaluacion/Evaluacion";
 import RevisionEvaluacion from "./modules/reporteEstudiante/components/RevisionEvaluacion";
-import ProgressLevel from "./modules/reporteEstudiante/components/ProgressLevel";
+import ProgressLevel from "./modules/reporteEstudiante/components/progressLevel/ProgressLevel";
 import ForoEstudiantil from "./modules/reporteEstudiante/components/foroEstudiantil/ForoEstudiantil";
 
 // 1. Creamos un componente Layout para las rutas públicas
