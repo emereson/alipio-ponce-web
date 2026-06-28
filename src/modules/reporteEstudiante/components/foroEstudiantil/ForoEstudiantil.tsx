@@ -33,7 +33,7 @@ const ForoEstudiantil = () => {
         <div className="max-w-3xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-4 w-full">
             <button
-              onClick={() => navigate("/dashboard-estudiante")}
+              onClick={() => navigate("/reporte-estudiante")}
               className="p-1 sm:p-2 hover:bg-indigo-50 hover:text-indigo-600 rounded-full transition-all text-slate-500 shrink-0 group"
             >
               <ChevronLeft
