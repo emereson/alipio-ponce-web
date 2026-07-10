@@ -37,7 +37,7 @@ export default function EncuestaForo({
   );
 
   return (
-    <div className="px-4 py-4 flex flex-col gap-3 border-b border-slate-100">
+    <div className="px-4 mt-2 py-4 flex flex-col gap-3 border-b border-slate-100">
       <div className="flex justify-between items-center mb-1">
         <span className="text-sm font-bold text-slate-800">
           Pregunta de Encuesta

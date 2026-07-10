@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MessageCircle, Globe, Megaphone } from "lucide-react";
+import { MessageCircle, Megaphone, CalendarDays, Clock } from "lucide-react";
 import type { EncuestaType, ForosType } from "../../../../../types/foro.type";
 import { API, SERVERIMG } from "../../../../../utils/api";
 import ReaccionesForo, { type TipoReaccion } from "./ReaccionesForo";
@@ -104,6 +104,12 @@ export default function CardForoEstudiante({ foro }: CardProps) {
   };
 
   const enviarVotoBackend = async (opcionId: number) => {
+    // 🛡️ Bloqueo lógico: Evita que se envíe el voto si la encuesta está inactiva
+    if (foro.status === "INACTIVO") {
+      toast.warning("Esta encuesta ya se encuentra finalizada.");
+      return;
+    }
+
     try {
       await axios.post(`${API}/respuesta-encuesta/${opcionId}`, {}, config);
       getEncuestas();
@@ -140,7 +146,7 @@ export default function CardForoEstudiante({ foro }: CardProps) {
   return (
     <div className=" bg-white border border-slate-200 rounded-3xl shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-indigo-500/10 hover:border-indigo-100 transition-all duration-500 overflow-hidden mb-10 w-full max-w-2xl mx-auto flex flex-col">
       {/* 1. ENCABEZADO SAAS */}
-      <div className="p-2 flex items-center justify-between bg-linear-to-b from-slate-50 to-white">
+      <div className="p-3 flex items-center justify-between bg-linear-to-b from-slate-50 to-white">
         <div className="flex items-center gap-4">
           <div className="relative">
             <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-indigo-600 via-blue-600 to-violet-600 flex items-center justify-center text-white font-black text-xl shrink-0 shadow-md shadow-indigo-600/30 ring-4 ring-white transform group-hover:scale-105 transition-transform duration-300">
@@ -152,20 +158,37 @@ export default function CardForoEstudiante({ foro }: CardProps) {
             <h4 className="font-extrabold text-slate-900 text-[16px] tracking-tight hover:text-indigo-600 transition-colors cursor-pointer">
               Colegio Alipio Ponce
             </h4>
-            <div className="flex items-center gap-2 text-slate-500 mt-1">
-              <span className="text-[12px] font-semibold bg-slate-100 px-2 py-0.5 rounded-full flex items-center gap-1">
-                <Megaphone size={10} className="text-indigo-500" />
+
+            {/* Contenedor de Fechas y Etiquetas */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+              <span className="text-[12px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full flex items-center gap-1">
+                <Megaphone size={11} className="text-indigo-500" />
                 {foro.tipo_foro === "encuesta" ? "Encuesta" : "Aviso"}
               </span>
-              <span className="text-[12px] font-medium tracking-wide flex items-center gap-1">
-                <Globe size={11} className="text-slate-400" />
+
+              {/* Fecha Disponible */}
+              <span className="text-[12px] font-medium tracking-wide flex items-center gap-1 text-slate-500">
+                <CalendarDays size={12} className="text-emerald-500" />
                 {foro.fecha_disponible
                   ? new Date(foro.fecha_disponible).toLocaleDateString(
                       undefined,
-                      { day: "numeric", month: "short" },
+                      { day: "numeric", month: "short", year: "numeric" },
                     )
                   : "Reciente"}
               </span>
+
+              {/* Fecha Límite */}
+              {foro.fecha_limite && (
+                <span className="text-[12px] font-medium tracking-wide flex items-center gap-1 text-slate-500">
+                  <Clock size={12} className="text-red-500" />
+                  Límite:{" "}
+                  {new Date(foro.fecha_limite).toLocaleDateString(undefined, {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -178,7 +201,7 @@ export default function CardForoEstudiante({ foro }: CardProps) {
             {foro.titulo_foro}
           </h3>
         )}
-        <Divider />
+        <Divider className="my-2" />
         <p className="text-slate-700 mt-1 text-[14px] whitespace-pre-wrap leading-relaxed ">
           {foro.texto_foro}
         </p>
@@ -197,7 +220,7 @@ export default function CardForoEstudiante({ foro }: CardProps) {
 
       {/* 4. ENCUESTAS */}
       {foro.tipo_foro === "encuesta" && encuestas && encuestas.length > 0 && (
-        <div className="bg-slate-50 border-y border-slate-100">
+        <div className="bg-slate-50 border-y border-slate-100 relative">
           {loadingVoto ? (
             <div className="px-3 py-4 flex items-center justify-center">
               <div className="flex gap-2">
@@ -213,7 +236,16 @@ export default function CardForoEstudiante({ foro }: CardProps) {
               </div>
             </div>
           ) : (
-            <div className="px-2 pb-2">
+            <div
+              className={`px-4 pt-3 pb-4 relative ${foro.status === "INACTIVO" ? "pointer-events-none opacity-60 grayscale-20" : ""}`}
+            >
+              {/* Etiqueta de Encuesta Cerrada */}
+              {foro.status === "INACTIVO" && (
+                <div className="absolute top-2 right-4 bg-red-100 text-red-600 text-[11px] font-bold px-2 py-1 rounded-md z-10 border border-red-200">
+                  Encuesta Finalizada
+                </div>
+              )}
+
               <EncuestaForo
                 opciones={encuestas}
                 votoInicialId={votoInicial}
@@ -225,7 +257,7 @@ export default function CardForoEstudiante({ foro }: CardProps) {
       )}
 
       {/* 5. 🟢 BARRA DE RESUMEN E INTERACCIÓN */}
-      <div className="w-full px-4 py-2 flex flex-row items-center  justify-between gap-4 border-t border-slate-100 bg-white">
+      <div className="w-full px-4 py-2 flex flex-row items-center justify-between gap-4 border-t border-slate-100 bg-white">
         {loadingReaccion ? (
           <div className="h-10 w-32 bg-slate-100 animate-pulse rounded-lg"></div>
         ) : (
@@ -272,7 +304,6 @@ export default function CardForoEstudiante({ foro }: CardProps) {
           />
         </div>
       </div>
-
     </div>
   );
 }
