@@ -14,6 +14,7 @@ import { useAuthStore } from "../../../../auth/auth.store";
 import { SERVERIMG } from "../../../../utils/api";
 import { toast } from "sonner";
 import ModalAnuncions from "./ModalAnuncions";
+import NotificationDropdown from "./NotificationDropdown";
 
 interface TopBarProps {
   setIsSidebarOpen: (e: boolean) => void;
@@ -50,9 +51,7 @@ const TopBar = ({
 
   return (
     <div className="flex-1 flex flex-col min-w-0">
-      {/* TOPBAR */}
-      <header className="h-20 bg-slate-900 lg:bg-slate-50 border-b border-slate-200 flex items-center justify-between px-6 sticky top-0 z-40">
-        {/* ... (Contenido del Topbar igual) ... */}
+      <header className="h-20 bg-slate-900 lg:bg-slate-50 border-b border-slate-200 flex items-center justify-between px-3 sticky top-0 z-40">
         <button
           className="lg:hidden p-2 text-amber-400 hover:bg-slate-800 rounded-xl transition-colors"
           onClick={() => setIsSidebarOpen(true)}
@@ -74,16 +73,21 @@ const TopBar = ({
               onPress={() => setShowNotifications(true)}
             >
               <MegaphoneIcon
-                size={22}
+                size={21}
                 className="text-slate-300 lg:text-slate-400"
               />
             </Button>
           </Badge>
 
+          {/* MENÚ DE NOTIFICACIONES */}
+          {/* Se pasa el ID del estudiante para el Web Socket. Ajusta 'perfil?.id' según cómo tengas definido tu store. */}
+          <NotificationDropdown estudianteId={perfil?.id} />
+
+          {/* PERFIL / AULAS */}
           <Dropdown placement="bottom-end" backdrop="blur">
             <DropdownTrigger>
               <div className="flex items-center gap-2 sm:gap-3 cursor-pointer group p-1 rounded-2xl transition-all">
-                <div className="flex flex-col items-end leading-none text-white lg:text-slate-900">
+                <div className="flex flex-col gap-0.5 items-end leading-none text-white lg:text-slate-900">
                   <span className="text-[10px] font-black uppercase max-w-20 sm:max-w-37.5 truncate text-right">
                     {perfil?.name}
                   </span>
@@ -94,7 +98,11 @@ const TopBar = ({
                 <Avatar
                   isBordered
                   color="warning"
-                  src={`${SERVERIMG}/${perfil?.studentImg}` || ""}
+                  src={
+                    perfil?.studentImg
+                      ? `${SERVERIMG}/${perfil.studentImg}`
+                      : ""
+                  }
                   className="w-9 h-9 sm:w-10 sm:h-10 shadow-sm"
                 />
                 <ChevronDown
@@ -170,6 +178,7 @@ const TopBar = ({
           </Dropdown>
         </div>
       </header>
+
       <ModalAnuncions
         dataStudent={dataStudent}
         dataClassroomId={dataClassroomId}

@@ -125,7 +125,7 @@ const ModalAnuncions = ({
                             <div className="flex-1  px-8 pb-4 flex justify-center items-start min-h-0">
                               <img
                                 src={`${SERVERIMG}/${notification.notificationImg}`}
-                                className="w-full max-w-xl h-auto rounded-lg shadow-sm border border-slate-200 select-none"
+                                className="w-full max-w-lg h-auto rounded-lg shadow-sm border border-slate-200 select-none"
                                 alt={`Notificación ${index + 1}`}
                                 draggable={false}
                               />
@@ -144,7 +144,7 @@ const ModalAnuncions = ({
                             e.stopPropagation();
                             prevSlide();
                           }}
-                          className="absolute left-1 max-sm:left-2.5 top-1/2 -translate-y-1/2 w-7 h-7 bg-white border border-slate-200 text-slate-800 rounded-full flex items-center justify-center shadow-lg hover:bg-slate-100 hover:scale-110 transition-all z-20"
+                          className="absolute left-1 max-sm:left-2.5 top-1/2 -translate-y-1/2 w-7 h-7 max-sm:w-10 max-sm:h-10 bg-white border border-slate-200 text-slate-800 rounded-full flex items-center justify-center shadow-lg hover:bg-slate-100 hover:scale-110 transition-all z-20"
                         >
                           <ChevronLeft size={18} />
                         </button>
@@ -153,7 +153,7 @@ const ModalAnuncions = ({
                             e.stopPropagation();
                             nextSlide();
                           }}
-                          className="absolute right-1 max-sm:right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 bg-white border border-slate-200 text-slate-800 rounded-full flex items-center justify-center shadow-lg hover:bg-slate-100 hover:scale-110 transition-all z-20"
+                          className="absolute right-1 max-sm:right-2.5 top-1/2 -translate-y-1/2 w-7 h-7 max-sm:w-10 max-sm:h-10 bg-white border border-slate-200 text-slate-800 rounded-full flex items-center justify-center shadow-lg hover:bg-slate-100 hover:scale-110 transition-all z-20"
                         >
                           <ChevronRight size={18} />
                         </button>
