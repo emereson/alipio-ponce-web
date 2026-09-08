@@ -270,6 +270,7 @@ const StudentReportLayout = () => {
         classroomId={classroomId}
         prevSlide={prevSlide}
         nextSlide={nextSlide}
+        
       />
 
       {isSidebarOpen && (

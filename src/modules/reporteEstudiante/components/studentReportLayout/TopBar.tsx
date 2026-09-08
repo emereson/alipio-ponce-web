@@ -81,7 +81,7 @@ const TopBar = ({
 
           {/* MENÚ DE NOTIFICACIONES */}
           {/* Se pasa el ID del estudiante para el Web Socket. Ajusta 'perfil?.id' según cómo tengas definido tu store. */}
-          <NotificationDropdown estudianteId={perfil?.id} />
+          <NotificationDropdown estudianteId={perfil?.id} setDataClassroomId={setDataClassroomId} />
 
           {/* PERFIL / AULAS */}
           <Dropdown placement="bottom-end" backdrop="blur">
