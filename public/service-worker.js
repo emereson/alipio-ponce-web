@@ -22,7 +22,6 @@ self.addEventListener("push", function (event) {
     data: { url: urlDestino },
   };
 
-  // Mostrar la notificación nativa del sistema operativo
   event.waitUntil(
     self.registration.showNotification(data.titulo || "Notificación", options),
   );
