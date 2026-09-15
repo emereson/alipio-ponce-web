@@ -1,13 +1,22 @@
 // public/service-worker.js
 
-// 1. Escuchar el evento Push que llega desde tu backend
+// 1. Forzar al nuevo Service Worker a instalarse de inmediato sin esperar
+self.addEventListener("install", function (event) {
+  self.skipWaiting();
+});
+
+// 2. Forzar al nuevo Service Worker a tomar el control de la página actual
+self.addEventListener("activate", function (event) {
+  event.waitUntil(clients.claim());
+});
+
+// 3. Escuchar el evento Push que llega desde tu backend
 self.addEventListener("push", function (event) {
   // Parsear los datos que mandamos desde el backend
   const data = event.data ? JSON.parse(event.data.text()) : {};
 
   let urlDestino = data.ruta || "/";
 
-  // Buscamos "/pagos", "/observaciones" o "/notas" y les agregamos el prefijo
   // El $1 representa la palabra exacta que encontró (pagos, observaciones o notas)
   urlDestino = urlDestino.replace(
     /\/(pagos|observaciones|notas)/,
@@ -27,7 +36,6 @@ self.addEventListener("push", function (event) {
   );
 });
 
-// 2. Escuchar cuando el usuario hace clic en la notificación
 self.addEventListener("notificationclick", function (event) {
   event.notification.close(); // Cerramos la notificación
   event.waitUntil(
