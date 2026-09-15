@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
 import {
@@ -29,9 +30,9 @@ export interface NotificacionType {
 
 interface NotificationProps {
   estudianteId?: number | string;
+  setDataClassroomId: (e: string) => void; 
 }
 
-// Función necesaria para convertir la clave pública VAPID
 const urlBase64ToUint8Array = (base64String: string) => {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding)
@@ -45,13 +46,12 @@ const urlBase64ToUint8Array = (base64String: string) => {
   return outputArray;
 };
 
-const NotificationDropdown = ({ estudianteId }: NotificationProps) => {
+const NotificationDropdown = ({ estudianteId, setDataClassroomId }: NotificationProps) => {
   const [notificaciones, setNotificaciones] = useState<NotificacionType[]>([]);
+  const navigate = useNavigate();
 
-  // Función para reproducir el sonido de notificación
   const playSound = () => {
     try {
-      // Asegúrate de tener un archivo llamado "notification.mp3" dentro de la carpeta "public"
       const audio = new Audio("/notificacion.mp3");
       audio.play().catch((err) => {
         console.warn("El navegador bloqueó el sonido (Autoplay policy):", err);
@@ -61,7 +61,6 @@ const NotificationDropdown = ({ estudianteId }: NotificationProps) => {
     }
   };
 
-  // 1. CONFIGURACIÓN DEL SERVICE WORKER Y PUSH API
   useEffect(() => {
     const registerPush = async () => {
       if (
@@ -70,31 +69,23 @@ const NotificationDropdown = ({ estudianteId }: NotificationProps) => {
         estudianteId
       ) {
         try {
-          // Registramos el archivo Service Worker
           const register =
             await navigator.serviceWorker.register("/service-worker.js");
           await navigator.serviceWorker.ready;
 
-          // Pedimos permisos al usuario
           const permission = await Notification.requestPermission();
           if (permission !== "granted") return;
 
-          // Obtenemos la clave pública del .env
           const publicVapidKey =
             "BHUcXVYUhkvGR_tAbmf8wJ2Nf0un9ee4hKE6P8L-5hnhoQiyDq2b-w84J4EdahfpWkbq6AkDAhp3cGBsrTw0Ag4";
 
-          if (!publicVapidKey) {
-            console.error("Falta VITE_VAPID_PUBLIC_KEY en el .env");
-            return;
-          }
+          if (!publicVapidKey) return;
 
-          // Nos suscribimos
           const subscription = await register.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
           });
 
-          // Guardamos la suscripción en la base de datos
           await axios.post(
             `${API}/notificaciones/suscribir`,
             {
@@ -112,7 +103,6 @@ const NotificationDropdown = ({ estudianteId }: NotificationProps) => {
     registerPush();
   }, [estudianteId]);
 
-  // 2. OBTENER HISTORIAL DE NOTIFICACIONES DESDE LA BD
   const getNotificaciones = () => {
     axios
       .get(`${API}/notificaciones`, config)
@@ -124,7 +114,6 @@ const NotificationDropdown = ({ estudianteId }: NotificationProps) => {
     getNotificaciones();
   }, []);
 
-  // 3. CONEXIÓN A SOCKET.IO PARA TIEMPO REAL EN LA APP
   useEffect(() => {
     if (!estudianteId) return;
 
@@ -134,18 +123,13 @@ const NotificationDropdown = ({ estudianteId }: NotificationProps) => {
     const canalSocket = `notificacion-create/estudiante:${estudianteId}`;
 
     socket.on(canalSocket, (nuevaNotificacion: NotificacionType) => {
-      // 1. Reproducimos el sonido personalizado
       playSound();
-
-      // 2. Actualizamos la lista de notificaciones (la campanita sumará 1)
       setNotificaciones((prev) => [nuevaNotificacion, ...prev]);
 
-      // 3. Mostramos una alerta en pantalla dentro de la aplicación
       toast.info(nuevaNotificacion.titulo_notificacion, {
         description: nuevaNotificacion.descripcion_notificacion,
       });
 
-      // 4. Fallback: Forzamos la notificación nativa si el SW falla o tarda
       if ("Notification" in window && Notification.permission === "granted") {
         const notifNativa = new Notification(
           nuevaNotificacion.titulo_notificacion,
@@ -158,7 +142,7 @@ const NotificationDropdown = ({ estudianteId }: NotificationProps) => {
         notifNativa.onclick = () => {
           window.focus();
           if (nuevaNotificacion.ruta_notificacion) {
-            window.location.href = nuevaNotificacion.ruta_notificacion;
+            navigate(`/reporte-estudiante/${nuevaNotificacion.ruta_notificacion}`);
           }
         };
       }
@@ -168,19 +152,34 @@ const NotificationDropdown = ({ estudianteId }: NotificationProps) => {
       socket.off(canalSocket);
       socket.disconnect();
     };
-  }, [estudianteId]);
+  }, [estudianteId, navigate]);
 
   const unreadCount = notificaciones.filter((n) => !n.vista).length;
 
   const handleNotificationClick = (notif: NotificacionType) => {
-    // Marcamos como leída localmente
     setNotificaciones((prev) =>
       prev.map((n) => (n.id === notif.id ? { ...n, vista: true } : n)),
     );
 
-    // Redirección
     if (notif.ruta_notificacion) {
-      window.location.href = `${notif.ruta_notificacion}`;
+      // 1. Extraer los parámetros de la URL
+      try {
+        const queryString = notif.ruta_notificacion.split("?")[1];
+        if (queryString) {
+          const params = new URLSearchParams(queryString);
+          const classroomId = params.get("classroom_student_id");
+          
+          // 2. Si existe el ID, actualizar el estado
+          if (classroomId) {
+            setDataClassroomId(classroomId);
+          }
+        }
+      } catch (error) {
+        console.error("Error extrayendo classroom_student_id:", error);
+      }
+
+      // 3. Navegar a la ruta
+      navigate(`/reporte-estudiante/${notif.ruta_notificacion}`);
     }
   };
 
@@ -189,7 +188,6 @@ const NotificationDropdown = ({ estudianteId }: NotificationProps) => {
     toast.success("Todas las notificaciones marcadas como leídas");
   };
 
-  // Función para obtener estilos de los iconos
   const getNotificationStyle = (tipo: string) => {
     switch (tipo) {
       case "examen":
