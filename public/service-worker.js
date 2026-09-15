@@ -5,12 +5,21 @@ self.addEventListener("push", function (event) {
   // Parsear los datos que mandamos desde el backend
   const data = event.data ? JSON.parse(event.data.text()) : {};
 
+  let urlDestino = data.ruta || "/";
+
+  // Buscamos "/pagos", "/observaciones" o "/notas" y les agregamos el prefijo
+  // El $1 representa la palabra exacta que encontró (pagos, observaciones o notas)
+  urlDestino = urlDestino.replace(
+    /\/(pagos|observaciones|notas)/,
+    "/reporte-estudiante/$1",
+  );
+
   const options = {
     body: data.descripcion || "Tienes una nueva notificación",
-    icon: "/logo.svg", // Cambia esto por la ruta de tu logo (ej: /logo.png)
+    icon: "/logo.svg",
     badge: "/logo.svg",
-    vibrate: [200, 100, 200, 100, 200], // Patrón de vibración en celulares
-    data: { url: data.ruta || "/" },
+    vibrate: [200, 100, 200, 100, 200],
+    data: { url: urlDestino },
   };
 
   // Mostrar la notificación nativa del sistema operativo
@@ -23,6 +32,7 @@ self.addEventListener("push", function (event) {
 self.addEventListener("notificationclick", function (event) {
   event.notification.close(); // Cerramos la notificación
   event.waitUntil(
-    clients.openWindow(event.notification.data.url), // Abrimos la ruta correspondiente
+    // Abrimos la ruta correspondiente con el nuevo dominio
+    clients.openWindow(event.notification.data.url),
   );
 });
